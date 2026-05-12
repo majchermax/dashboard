@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mój Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f2;color:#1a1a1a;min-height:100vh}
+.app{max-width:600px;margin:0 auto;padding:1rem}
+.cel-box{background:#E1F5EE;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;position:relative}
+.cel-label{font-size:11px;font-weight:500;color:#0F6E56;letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px}
+.cel-text{font-size:15px;font-weight:500;color:#085041;line-height:1.5;min-height:24px;outline:none;width:100%}
+.cel-text[contenteditable=true]:focus{background:rgba(255,255,255,.3);border-radius:6px;padding:2px 6px}
+.edit-hint{font-size:11px;color:#0F6E56;opacity:.6;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:1rem}
+.stat{background:#fff;border-radius:8px;padding:.875rem 1rem;border:.5px solid #e5e5e0}
+.stat-label{font-size:11px;color:#999;margin-bottom:4px}
+.stat-val{font-size:20px;font-weight:500;color:#1a1a1a}
+.stat-sub{font-size:11px;color:#bbb;margin-top:2px}
+.sec-label{font-size:11px;font-weight:500;color:#bbb;letter-spacing:.07em;text-transform:uppercase;margin:0 0 8px}
+.tabs{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.tab{font-size:12px;padding:5px 12px;border-radius:20px;border:.5px solid #ccc;background:#fff;color:#888;cursor:pointer;transition:all .15s}
+.tab.active{background:#085041;color:#9FE1CB;border-color:#085041}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.acc{border:.5px solid #e5e5e0;border-radius:12px;overflow:hidden;margin-bottom:8px;background:#fff}
+.acc-h{display:flex;align-items:center;gap:10px;padding:.875rem 1rem;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:background .1s}
+.acc-h:active{background:#f5f5f2}
+.acc-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.acc-title{font-size:14px;font-weight:500;color:#1a1a1a;flex:1}
+.acc-meta{font-size:12px;color:#bbb;margin-right:4px}
+.acc-chev{font-size:13px;color:#bbb;transition:transform .2s;flex-shrink:0}
+.acc-chev.open{transform:rotate(180deg)}
+.acc-body{padding:0 1rem 1rem;border-top:.5px solid #f0f0ee;display:none}
+.tasks-list{margin-top:.75rem}
+.task-row{display:flex;align-items:flex-start;gap:8px;padding:4px 0;border-radius:6px}
+.task-row:hover .task-del{opacity:1}
+.task-cb{width:16px;height:16px;margin-top:3px;flex-shrink:0;cursor:pointer;accent-color:#1D9E75}
+.task-label{font-size:13px;color:#1a1a1a;flex:1;line-height:1.45;cursor:pointer;outline:none;min-height:18px}
+.task-label.done-text{color:#ccc;text-decoration:line-through}
+.task-label[contenteditable=true]:focus{background:#f5f5f2;border-radius:4px;padding:1px 4px}
+.task-del{opacity:0;cursor:pointer;font-size:16px;color:#ddd;flex-shrink:0;padding:0 2px;transition:opacity .15s;line-height:1.4;background:none;border:none}
+.task-del:hover{color:#e24b4a}
+.add-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:#1D9E75;cursor:pointer;padding:6px 0 0;background:none;border:none;font-family:inherit}
+.add-btn:hover{color:#0F6E56}
+.prog-bar{height:3px;background:#f0f0ee;border-radius:2px;margin:10px 0 0;overflow:hidden}
+.prog-fill{height:100%;background:#1D9E75;border-radius:2px;transition:width .3s}
+.divider{border:none;border-top:.5px solid #e5e5e0;margin:1rem 0}
+.week-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:.75rem}
+.week-day{background:#f8f8f6;border-radius:8px;padding:.75rem}
+.week-day-label{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.day-task{display:flex;align-items:flex-start;gap:6px;padding:3px 0}
+.day-task input[type=checkbox]{width:14px;height:14px;margin-top:2px;flex-shrink:0;accent-color:#1D9E75}
+.day-task-label{font-size:12px;color:#1a1a1a;flex:1;outline:none;cursor:pointer}
+.day-task-label.done-text{color:#ccc;text-decoration:line-through}
+.day-add{font-size:11px;color:#1D9E75;cursor:pointer;padding:4px 0 0;background:none;border:none;font-family:inherit}
+.locked-box{background:#f8f8f6;border-radius:8px;padding:1rem;font-size:13px;color:#bbb;text-align:center}
+.note-area{width:100%;border:.5px solid #e5e5e0;border-radius:8px;padding:8px 10px;font-size:13px;color:#1a1a1a;background:#fff;resize:vertical;min-height:70px;font-family:inherit;margin-top:6px}
+.note-area:focus{outline:none;border-color:#1D9E75}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;margin-right:4px;margin-bottom:4px}
+.tg{background:#EAF3DE;color:#27500A}
+.ta{background:#FAEEDA;color:#633806}
+.tp{background:#EEEDFE;color:#3C3489}
+.section-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="cel-box">
+  <div class="cel-label">&#9679; Cel 2029</div>
+  <div class="cel-text" id="cel-text" contenteditable="true" spellcheck="false">Własna marka meblowa · 30k+/mies · dom koło Częstochowy · rodzina · wolność finansowa</div>
+  <div class="edit-hint">&#9998; kliknij żeby edytować</div>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-label">Zadania miesiąca</div>
+    <div class="stat-val" id="stat-tasks">0 / 0</div>
+    <div class="stat-sub">odhaczone</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Dzisiaj</div>
+    <div class="stat-val" id="stat-daily">0 / 5</div>
+    <div class="stat-sub">fundamenty</div>
+  </div>
+</div>
+
+<div class="sec-label">Miesięczny focus</div>
+<div class="tabs" id="month-tabs"></div>
+<div id="month-panels"></div>
+
+<div class="divider"></div>
+
+<div class="sec-label">Tygodniowy plan</div>
+<div class="acc" id="acc-week">
+  <div class="acc-h" onclick="togAcc('week')">
+    <div class="acc-ico" style="background:#E6F1FB">&#128197;</div>
+    <div class="acc-title">Ten tydzień</div>
+    <div class="acc-meta" id="week-meta"></div>
+    <span class="acc-chev" id="chev-week">&#8964;</span>
+  </div>
+  <div class="acc-body" id="body-week">
+    <div class="week-grid" id="week-grid"></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-label">Fundamenty codzienne</div>
+<div class="acc">
+  <div class="acc-h" onclick="togAcc('daily')">
+    <div class="acc-ico" style="background:#E1F5EE">&#10003;</div>
+    <div class="acc-title">Dzisiaj</div>
+    <div class="acc-meta" id="daily-meta">0/5</div>
+    <span class="acc-chev" id="chev-daily">&#8964;</span>
+  </div>
+  <div class="acc-body" id="body-daily">
+    <div class="tasks-list" id="daily-list"></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-daily" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec-label">Notatka tygodniowa</div>
+<div style="font-size:12px;color:#bbb;margin-bottom:4px">Co poszło dobrze? Co zmieniam w przyszłym tygodniu?</div>
+<textarea class="note-area" id="weekly-note" placeholder="Wpisz tu..."></textarea>
+
+</div>
+
+<script>
+const MONTHS = [
+  {
+    id:'maj', label:'Maj', tags:['Budowa fundamentów','Brak publikacji'], tagc:['tg','ta'], locked:false,
+    sections:[
+      {id:'system', label:'System', ico:'&#9881;', bg:'#E1F5EE', tasks:[
+        'Założyć konto Notion i dashboard',
+        'Stworzyć folder "Firma 2026" w Google Drive',
+        'Skonfigurować kolekcje w IG i TikTok'
+      ]},
+      {id:'rynek', label:'Rynek', ico:'&#128269;', bg:'#FAEEDA', tasks:[
+        'Znaleźć i zapisać 20 firm meblowych (IG/TikTok/Allegro)',
+        'Spisać ceny 20 produktów konkurencji',
+        'Zapisać 30 inspiracji produktowych'
+      ]},
+      {id:'content', label:'Content (obserwacja)', ico:'&#128247;', bg:'#EEEDFE', tasks:[
+        'Zapisać 30 rolek inspiracyjnych do kolekcji',
+        'Wypisać 20 pomysłów na własny content',
+        'Znaleźć 10 dobrych hooków które działają'
+      ]},
+      {id:'sprzedaz', label:'Sprzedaż', ico:'&#128176;', bg:'#FAECE7', tasks:[
+        'Obejrzeć 10 materiałów o sprzedaży (YouTube/podcast)',
+        'Wypisać 15 technik sprzedażowych które zapamiętałem'
+      ]},
+      {id:'finanse', label:'Finanse', ico:'&#128179;', bg:'#E6F1FB', tasks:[
+        'Rozpisać miesięczne koszty (co, ile)',
+        'Zejść poniżej 3 600 zł wydatków',
+        'Odłożyć choć symboliczną kwotę'
+      ]},
+      {id:'zdrowie', label:'Zdrowie i psychika', ico:'&#128170;', bg:'#EAF3DE', tasks:[
+        '20 treningów w maju',
+        'Codziennie 60 min nad przyszłością',
+        'Max 1h bezmyślnego scrollowania dziennie',
+        'Regularny sen — kłaść się o stałej porze'
+      ]}
+    ]
+  },
+  {
+    id:'czerwiec', label:'Czerwiec', tags:['Pierwszy produkt','Start contentu'], tagc:['tg','tp'], locked:false,
+    sections:[
+      {id:'c-biznes', label:'Biznes', ico:'&#128296;', bg:'#E1F5EE', tasks:[
+        'Zrobić pierwszy produkt (choćby prosty)',
+        'Wrzucić pierwsze zdjęcia/rolki z procesu',
+        'Założyć profil na IG pod markę',
+        'Zebrać pierwsze portfolio (3+ zdjęcia)'
+      ]},
+      {id:'c-trener', label:'Trener', ico:'&#127947;', bg:'#FAEEDA', tasks:[
+        'Zdobyć pierwszych 3 klientów',
+        'Ustalić cennik i pakiety',
+        'Zacząć budować sieć na siłowni'
+      ]},
+      {id:'c-content', label:'Content', ico:'&#127909;', bg:'#EEEDFE', tasks:[
+        'Wrzucić minimum 12 postów/rolek',
+        'Przetestować 3 różne style contentu',
+        'Zapisać co działa, co nie działa'
+      ]}
+    ]
+  },
+  {
+    id:'lipiec', label:'Lipiec', tags:['Trener na etat','Meble równolegle'], tagc:['tg','ta'], locked:false,
+    sections:[
+      {id:'l-trener', label:'Trener', ico:'&#127947;', bg:'#FAEEDA', tasks:[
+        'Przejść na trenerstwo jako główne źródło dochodu',
+        'Cel: min 2 000 zł z treningów',
+        'Utrzymać regularność klientów'
+      ]},
+      {id:'l-biznes', label:'Biznes', ico:'&#128296;', bg:'#E1F5EE', tasks:[
+        '2–3 gotowe produkty w portfolio',
+        'Pierwsze zapytania od klientów',
+        'Sprawdzić wymagania PUP do dotacji'
+      ]}
+    ]
+  },
+  {
+    id:'sierpien', label:'Sierpień', tags:['Dotacje','Pierwsze zlecenie'], tagc:['tp','tg'], locked:false,
+    sections:[
+      {id:'s-dotacje', label:'Dotacje', ico:'&#128196;', bg:'#E6F1FB', tasks:[
+        'Umówić się do PUP Częstochowa',
+        'Przygotować opis biznesu',
+        'Sprawdzić ARR Częstochowa',
+        'Zebrać dokumenty do wniosku'
+      ]},
+      {id:'s-biznes', label:'Biznes', ico:'&#128296;', bg:'#E1F5EE', tasks:[
+        'Pierwsze płatne zlecenie meblowe',
+        'Marka widoczna lokalnie',
+        'Plan na jesień gotowy'
+      ]}
+    ]
+  }
+];
+
+const DAYS = ['Pon','Wt','Śr','Czw','Pt','Sob','Nd'];
+const DAILY_DEFAULT = ['Trening','60 min nad przyszłością','Coś do systemu (pomysł / link)','Kontrola wydatków','Brak dopaminowego syfu'];
+
+let S = {};
+
+function load(){
+  try{ S = JSON.parse(localStorage.getItem('dash_v2')||'{}'); }catch(e){ S={}; }
+  if(!S.cel) S.cel = 'Własna marka meblowa · 30k+/mies · dom koło Częstochowy · rodzina · wolność finansowa';
+  if(!S.tasks) S.tasks = {};
+  if(!S.checks) S.checks = {};
+  if(!S.dailyTasks) S.dailyTasks = [...DAILY_DEFAULT];
+  if(!S.dailyChecks) S.dailyChecks = {};
+  if(!S.note) S.note = '';
+  if(!S.weekTasks) S.weekTasks = {};
+  if(!S.weekChecks) S.weekChecks = {};
+  if(!S.activeMonth) S.activeMonth = 'maj';
+  MONTHS.forEach(m=>{
+    m.sections.forEach(sec=>{
+      if(!S.tasks[sec.id]) S.tasks[sec.id] = [...sec.tasks];
+      if(!S.checks[sec.id]) S.checks[sec.id] = {};
+    });
+  });
+}
+
+function save(){ localStorage.setItem('dash_v2', JSON.stringify(S)); }
+
+function render(){
+  document.getElementById('cel-text').textContent = S.cel;
+  renderMonthTabs();
+  renderWeek();
+  renderDaily();
+  document.getElementById('weekly-note').value = S.note||'';
+  updateStats();
+}
+
+function renderMonthTabs(){
+  const tabsEl = document.getElementById('month-tabs');
+  const panelsEl = document.getElementById('month-panels');
+  tabsEl.innerHTML = '';
+  panelsEl.innerHTML = '';
+  MONTHS.forEach(m=>{
+    const t = document.createElement('div');
+    t.className = 'tab' + (S.activeMonth===m.id?' active':'');
+    t.textContent = m.label;
+    t.onclick = ()=>{ S.activeMonth=m.id; save(); renderMonthTabs(); updateStats(); };
+    tabsEl.appendChild(t);
+
+    const p = document.createElement('div');
+    p.className = 'tab-content' + (S.activeMonth===m.id?' active':'');
+    p.id = 'panel-'+m.id;
+
+    const tagsHtml = m.tags.map((t,i)=>`<span class="tag ${m.tagc[i]}">${t}</span>`).join('');
+    p.innerHTML = `<div style="margin-bottom:.875rem">${tagsHtml}</div>`;
+
+    m.sections.forEach(sec=>{
+      p.appendChild(renderSection(sec));
+    });
+
+    const addSecBtn = document.createElement('button');
+    addSecBtn.className = 'add-btn';
+    addSecBtn.innerHTML = '&#43; dodaj sekcję';
+    addSecBtn.onclick = ()=>{ addSection(m.id); };
+    p.appendChild(addSecBtn);
+
+    panelsEl.appendChild(p);
+  });
+}
+
+function renderSection(sec){
+  const wrapper = document.createElement('div');
+  wrapper.className = 'acc';
+  wrapper.id = 'acc-sec-'+sec.id;
+
+  const tasks = S.tasks[sec.id]||[];
+  const checks = S.checks[sec.id]||{};
+  const done = tasks.filter((_,i)=>checks[i]).length;
+  const pct = tasks.length ? Math.round(done/tasks.length*100) : 0;
+
+  wrapper.innerHTML = `
+    <div class="acc-h" onclick="togSecAcc('${sec.id}')">
+      <div class="acc-ico" style="background:${sec.bg}">${sec.ico}</div>
+      <div class="acc-title">${sec.label}</div>
+      <div class="acc-meta" id="meta-${sec.id}">${done}/${tasks.length}</div>
+      <span class="acc-chev" id="chev-${sec.id}">&#8964;</span>
+    </div>
+    <div class="acc-body" id="body-${sec.id}">
+      <div class="tasks-list" id="tlist-${sec.id}"></div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-${sec.id}" style="width:${pct}%"></div></div>
+      <button class="add-btn" onclick="addTask('${sec.id}')">&#43; dodaj zadanie</button>
+    </div>`;
+
+  setTimeout(()=>renderTaskList(sec.id),0);
+  return wrapper;
+}
+
+function renderTaskList(secId){
+  const list = document.getElementById('tlist-'+secId);
+  if(!list) return;
+  const tasks = S.tasks[secId]||[];
+  const checks = S.checks[secId]||{};
+  list.innerHTML='';
+  tasks.forEach((t,i)=>{
+    const row = document.createElement('div');
+    row.className = 'task-row';
+    const cb = document.createElement('input');
+    cb.type='checkbox'; cb.className='task-cb'; cb.checked=!!checks[i];
+    cb.onchange=()=>{ S.checks[secId][i]=cb.checked; save(); refreshSection(secId); updateStats(); };
+
+    const lbl = document.createElement('div');
+    lbl.className='task-label'+(cb.checked?' done-text':'');
+    lbl.contentEditable='true'; lbl.spellcheck=false;
+    lbl.textContent=t;
+    lbl.onblur=()=>{ S.tasks[secId][i]=lbl.textContent; save(); };
+    lbl.onclick=()=>{ if(!window.getSelection().toString()) cb.click(); };
+
+    const del = document.createElement('button');
+    del.className='task-del'; del.innerHTML='&#10005;'; del.title='usuń';
+    del.onclick=()=>{ S.tasks[secId].splice(i,1); const c={}; Object.keys(S.checks[secId]).forEach(k=>{ const ki=parseInt(k); if(ki<i) c[k]=S.checks[secId][k]; else if(ki>i) c[ki-1]=S.checks[secId][k]; }); S.checks[secId]=c; save(); renderTaskList(secId); refreshSection(secId); updateStats(); };
+
+    row.appendChild(cb); row.appendChild(lbl); row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+
+function refreshSection(secId){
+  const tasks = S.tasks[secId]||[];
+  const checks = S.checks[secId]||{};
+  const done = tasks.filter((_,i)=>checks[i]).length;
+  const pct = tasks.length ? Math.round(done/tasks.length*100) : 0;
+  const m = document.getElementById('meta-'+secId);
+  const p = document.getElementById('prog-'+secId);
+  if(m) m.textContent=done+'/'+tasks.length;
+  if(p) p.style.width=pct+'%';
+}
+
+function addTask(secId){
+  if(!S.tasks[secId]) S.tasks[secId]=[];
+  S.tasks[secId].push('Nowe zadanie');
+  save(); renderTaskList(secId); refreshSection(secId); updateStats();
+  setTimeout(()=>{
+    const list=document.getElementById('tlist-'+secId);
+    if(list){ const lbls=list.querySelectorAll('.task-label'); if(lbls.length){ const last=lbls[lbls.length-1]; last.focus(); document.execCommand('selectAll',false,null); } }
+  },50);
+}
+
+function addSection(monthId){
+  const m = MONTHS.find(x=>x.id===monthId);
+  if(!m) return;
+  const id = monthId+'-s'+Date.now();
+  const newSec = {id, label:'Nowa sekcja', ico:'&#9679;', bg:'#f5f5f2', tasks:['Pierwsze zadanie']};
+  m.sections.push(newSec);
+  S.tasks[id]=['Pierwsze zadanie'];
+  S.checks[id]={};
+  save(); renderMonthTabs(); updateStats();
+}
+
+function togAcc(id){
+  const body=document.getElementById('body-'+id);
+  const chev=document.getElementById('chev-'+id);
+  if(!body||!chev) return;
+  const open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  chev.classList.toggle('open',!open);
+}
+
+function togSecAcc(id){
+  const body=document.getElementById('body-'+id);
+  const chev=document.getElementById('chev-'+id);
+  if(!body||!chev) return;
+  const open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  chev.classList.toggle('open',!open);
+}
+
+function renderWeek(){
+  const grid=document.getElementById('week-grid');
+  grid.innerHTML='';
+  DAYS.forEach(d=>{
+    const cell=document.createElement('div');
+    cell.className='week-day';
+    const tasks=S.weekTasks[d]||[];
+    const checks=S.weekChecks[d]||{};
+    let html=`<div class="week-day-label">${d}</div>`;
+    tasks.forEach((t,i)=>{
+      html+=`<div class="day-task">
+        <input type="checkbox" ${checks[i]?'checked':''} onchange="toggleWeekTask('${d}',${i},this.checked)">
+        <div class="day-task-label${checks[i]?' done-text':''}" contenteditable="true" spellcheck="false" onblur="editWeekTask('${d}',${i},this)">${t}</div>
+      </div>`;
+    });
+    html+=`<button class="day-add" onclick="addWeekTask('${d}')">+ dodaj</button>`;
+    cell.innerHTML=html;
+    grid.appendChild(cell);
+  });
+  updateWeekMeta();
+}
+
+function toggleWeekTask(d,i,val){
+  if(!S.weekChecks[d]) S.weekChecks[d]={};
+  S.weekChecks[d][i]=val;
+  save(); renderWeek(); updateStats();
+}
+
+function editWeekTask(d,i,el){
+  if(!S.weekTasks[d]) S.weekTasks[d]=[];
+  S.weekTasks[d][i]=el.textContent;
+  save();
+}
+
+function addWeekTask(d){
+  if(!S.weekTasks[d]) S.weekTasks[d]=[];
+  S.weekTasks[d].push('Zadanie');
+  if(!S.weekChecks[d]) S.weekChecks[d]={};
+  save(); renderWeek();
+}
+
+function updateWeekMeta(){
+  let done=0,total=0;
+  DAYS.forEach(d=>{
+    const t=S.weekTasks[d]||[];
+    const c=S.weekChecks[d]||{};
+    total+=t.length;
+    done+=t.filter((_,i)=>c[i]).length;
+  });
+  const m=document.getElementById('week-meta');
+  if(m) m.textContent=done+'/'+total;
+}
+
+function renderDaily(){
+  const list=document.getElementById('daily-list');
+  if(!list) return;
+  list.innerHTML='';
+  S.dailyTasks.forEach((t,i)=>{
+    const row=document.createElement('div');
+    row.className='task-row';
+    const cb=document.createElement('input');
+    cb.type='checkbox'; cb.className='task-cb'; cb.checked=!!S.dailyChecks[i];
+    cb.onchange=()=>{ S.dailyChecks[i]=cb.checked; save(); refreshDaily(); updateStats(); };
+
+    const lbl=document.createElement('div');
+    lbl.className='task-label'+(cb.checked?' done-text':'');
+    lbl.contentEditable='true'; lbl.spellcheck=false;
+    lbl.textContent=t;
+    lbl.onblur=()=>{ S.dailyTasks[i]=lbl.textContent; save(); };
+    lbl.onclick=()=>{ if(!window.getSelection().toString()) cb.click(); };
+
+    const del=document.createElement('button');
+    del.className='task-del'; del.innerHTML='&#10005;';
+    del.onclick=()=>{ S.dailyTasks.splice(i,1); const c={}; Object.keys(S.dailyChecks).forEach(k=>{ const ki=parseInt(k); if(ki<i) c[k]=S.dailyChecks[k]; else if(ki>i) c[ki-1]=S.dailyChecks[k]; }); S.dailyChecks=c; save(); renderDaily(); updateStats(); };
+
+    row.appendChild(cb); row.appendChild(lbl); row.appendChild(del);
+    list.appendChild(row);
+  });
+
+  const addBtn=document.createElement('button');
+  addBtn.className='add-btn'; addBtn.innerHTML='&#43; dodaj fundament';
+  addBtn.onclick=()=>{ S.dailyTasks.push('Nowy fundament'); save(); renderDaily(); };
+  list.appendChild(addBtn);
+  refreshDaily();
+}
+
+function refreshDaily(){
+  const done=S.dailyTasks.filter((_,i)=>S.dailyChecks[i]).length;
+  const total=S.dailyTasks.length;
+  const pct=total?Math.round(done/total*100):0;
+  const m=document.getElementById('daily-meta');
+  const p=document.getElementById('prog-daily');
+  if(m) m.textContent=done+'/'+total;
+  if(p) p.style.width=pct+'%';
+}
+
+function updateStats(){
+  const m=MONTHS.find(x=>x.id===S.activeMonth);
+  let done=0,total=0;
+  if(m){ m.sections.forEach(sec=>{ const t=S.tasks[sec.id]||[]; const c=S.checks[sec.id]||{}; total+=t.length; done+=t.filter((_,i)=>c[i]).length; }); }
+  document.getElementById('stat-tasks').textContent=done+' / '+total;
+  const dd=S.dailyTasks.filter((_,i)=>S.dailyChecks[i]).length;
+  document.getElementById('stat-daily').textContent=dd+' / '+S.dailyTasks.length;
+  updateWeekMeta();
+}
+
+document.getElementById('cel-text').addEventListener('blur',function(){ S.cel=this.textContent; save(); });
+document.getElementById('weekly-note').addEventListener('input',function(){ S.note=this.value; save(); });
+
+load();
+render();
+</script>
+</body>
+</html>
