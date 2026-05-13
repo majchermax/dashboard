@@ -753,9 +753,28 @@ db.ref('dashboard').once('value').then(function(snapshot){
     load();
   }
 
+  if(!S.cel) S.cel='Własna marka meblowa · 30k+/mies · dom koło Częstochowy · rodzina · wolność finansowa';
+  if(!S.tasks) S.tasks={};
+  if(!S.checks) S.checks={};
+  if(!S.dailyTasks) S.dailyTasks=[...DAILY_DEF];
+  if(!S.dailyChecks) S.dailyChecks={};
+  if(!S.note) S.note='';
+  if(!S.weekTasks) S.weekTasks={};
+  if(!S.weekChecks) S.weekChecks={};
+  if(!S.activeMonth) S.activeMonth='maj';
+  if(!S.habits) S.habits=[];
+  if(!S.hdata) S.hdata={};
+
+  MONTHS_DEF.forEach(m=>m.sections.forEach(sec=>{
+    if(!S.tasks[sec.id]) S.tasks[sec.id]=[...sec.tasks];
+    if(!S.checks[sec.id]) S.checks[sec.id]={};
+  }));
+
   initHealth();
+  save();
   render();
   renderHealthPage();
+});
 });
 </script>
 </body>
