@@ -1,27 +1,5 @@
 <!DOCTYPE html>
 <html lang="pl">
-  <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBsEIuxWJH0Gd3efmmIMtnWSwK-0YCI0cI",
-  authDomain: "majcher-dashboard.firebaseapp.com",
-  databaseURL: "https://majcher-dashboard-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "majcher-dashboard",
-  storageBucket: "majcher-dashboard.firebasestorage.app",
-  messagingSenderId: "578624736194",
-  appId: "1:578624736194:web:474242a81d6809f344645b"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-window.firebaseDB = db;
-window.firebaseRef = ref;
-window.firebaseSet = set;
-window.firebaseGet = get;
-</script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -293,7 +271,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBsEIuxWJH0Gd3efmmIMtnWSwK-0YCI0cI",
+  authDomain: "majcher-dashboard.firebaseapp.com",
+  databaseURL: "https://majcher-dashboard-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "majcher-dashboard",
+  storageBucket: "majcher-dashboard.firebasestorage.app",
+  messagingSenderId: "578624736194",
+  appId: "1:578624736194:web:474242a81d6809f344645b"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 const MONTHS_DEF=[
   {id:'maj',label:'Maj',tags:['Budowa fundamentów','Brak publikacji'],tagc:['tg','ta'],sections:[
     {id:'system',label:'System',ico:'&#9881;',bg:'#E1F5EE',tasks:['Założyć konto Notion i dashboard','Stworzyć folder "Firma 2026" w Google Drive','Skonfigurować kolekcje w IG i TikTok']},
@@ -323,27 +317,11 @@ const DP=['Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota','Niedz
 const DAILY_DEF=['Trening','60 min nad przyszłością','Coś do systemu (pomysł / link)','Kontrola wydatków','Brak dopaminowego syfu'];
 
 let S={};
-async function load(){
-
+function load(){
   try{
-    const snap = await firebaseGet(
-      firebaseRef(firebaseDB,'dashboard')
-    );
-
-    if(snap.exists()){
-      S = snap.val();
-    }else{
-      S = {};
-    }
-
+    S=JSON.parse(localStorage.getItem('dash_v3')||'{}');
   }catch(e){
-
-    try{
-      S=JSON.parse(localStorage.getItem('dash_v3')||'{}');
-    }catch(err){
-      S={};
-    }
-
+    S={};
   }
 
   if(!S.cel) S.cel='Własna marka meblowa · 30k+/mies · dom koło Częstochowy · rodzina · wolność finansowa';
@@ -363,18 +341,10 @@ async function load(){
     if(!S.checks[sec.id]) S.checks[sec.id]={};
   }));
 }
-async function save(){
-  localStorage.setItem('dash_v3',JSON.stringify(S));
 
-  try{
-    await firebaseSet(
-      firebaseRef(firebaseDB,'dashboard'),
-      S
-    );
-    console.log('Zapisano do Firebase');
-  }catch(e){
-    console.error(e);
-  }
+function save(){
+  localStorage.setItem('dash_v3',JSON.stringify(S));
+  db.ref('dashboard').set(S);
 }
 
 const now=new Date();
@@ -776,15 +746,17 @@ function renderHSummary(){
 document.getElementById('cel-text').addEventListener('blur',function(){S.cel=this.textContent;save();});
 document.getElementById('weekly-note').addEventListener('input',function(){S.note=this.value;save();});
 
-(async ()=>{
-
-  await load();
+db.ref('dashboard').once('value').then(function(snapshot){
+  if(snapshot.exists()){
+    S = snapshot.val();
+  }else{
+    load();
+  }
 
   initHealth();
   render();
   renderHealthPage();
-
-})();
+});
 </script>
 </body>
 </html>
