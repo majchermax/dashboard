@@ -4,10 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mój Dashboard</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f2;color:#1a1a1a;min-height:100vh}
 .app{max-width:600px;margin:0 auto;padding:1rem}
+.home-screen{max-width:600px;margin:0 auto;padding:2rem 1rem;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+.home-title{font-size:22px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.home-sub{font-size:13px;color:#aaa;margin-bottom:2rem}
+.home-cards{display:flex;flex-direction:column;gap:12px}
+.home-card{background:#fff;border:.5px solid #e5e5e0;border-radius:16px;padding:1.25rem 1.5rem;cursor:pointer;display:flex;align-items:center;gap:16px;transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent}
+.home-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.home-card:active{transform:translateY(0)}
+.home-card-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.home-card-body{flex:1}
+.home-card-title{font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:3px}
+.home-card-sub{font-size:12px;color:#aaa}
+.home-card-arrow{font-size:18px;color:#ccc}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;padding:.5rem 0;margin-bottom:.75rem;background:none;border:none;font-family:inherit}
+.back-btn:hover{color:#1a1a1a}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.section-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.section-name{font-size:16px;font-weight:600;color:#1a1a1a}
+.empty-section{text-align:center;padding:3rem 1rem;color:#bbb}
+.empty-ico{font-size:40px;margin-bottom:12px}
+.empty-txt{font-size:14px;font-weight:500;color:#aaa;margin-bottom:6px}
+.empty-sub{font-size:12px;color:#ccc}
 .cel-box{background:#E1F5EE;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
 .cel-label{font-size:11px;font-weight:500;color:#0F6E56;letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px}
 .cel-text{font-size:15px;font-weight:500;color:#085041;line-height:1.5;outline:none;width:100%}
@@ -103,7 +126,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .s-bar{height:3px;background:#f0f0ee;border-radius:2px;overflow:hidden}
 .s-fill{height:100%;background:#1D9E75;border-radius:2px}
 .hday-card{background:#fff;border:.5px solid #e5e5e0;border-radius:12px;padding:1rem;margin-bottom:10px}
-.hday-date{font-size:11px;color:#aaa;font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
 .metric-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid #f0f0ee}
 .metric-row:last-child{border-bottom:none}
 .metric-ico{font-size:18px;width:28px;text-align:center;flex-shrink:0}
@@ -132,10 +154,60 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .h-sum-label{font-size:11px;color:#aaa;margin-bottom:4px}
 .h-sum-val{font-size:18px;font-weight:500;color:#1a1a1a}
 .h-sum-sub{font-size:11px;color:#bbb;margin-top:2px}
+.week-archive-item{background:#fff;border:.5px solid #e5e5e0;border-radius:12px;margin-bottom:8px;overflow:hidden}
+.week-archive-header{display:flex;align-items:center;justify-content:space-between;padding:.875rem 1rem;cursor:pointer;user-select:none}
+.week-archive-header:hover{background:#f8f8f6}
+.week-archive-title{font-size:13px;font-weight:500;color:#1a1a1a}
+.week-archive-sub{font-size:11px;color:#aaa;margin-top:2px}
+.week-archive-chev{font-size:13px;color:#bbb;transition:transform .2s}
+.week-archive-chev.open{transform:rotate(180deg)}
+.week-archive-body{display:none;padding:.75rem 1rem 1rem;border-top:.5px solid #f0f0ee}
+.week-archive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.week-archive-card{background:#f8f8f6;border-radius:8px;padding:.75rem}
+.week-archive-card-label{font-size:11px;color:#aaa;margin-bottom:3px}
+.week-archive-card-val{font-size:16px;font-weight:500;color:#1a1a1a}
+.week-archive-card-sub{font-size:11px;color:#bbb;margin-top:2px}
+.week-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:#E1F5EE;color:#085041;white-space:nowrap}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="home-screen" id="home-screen">
+  <div class="home-title">Cześć 👋</div>
+  <div class="home-sub">Co dziś ogarniamy?</div>
+  <div class="home-cards">
+    <div class="home-card" onclick="openSection('ja')">
+      <div class="home-card-ico" style="background:#E1F5EE">🙋</div>
+      <div class="home-card-body">
+        <div class="home-card-title">Ja</div>
+        <div class="home-card-sub">Cele, nawyki, zdrowie, plan miesięczny</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+    <div class="home-card" onclick="openSection('praca')">
+      <div class="home-card-ico" style="background:#E6F1FB">💼</div>
+      <div class="home-card-body">
+        <div class="home-card-title">Praca</div>
+        <div class="home-card-sub">Projekty, zadania, postępy</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+    <div class="home-card" onclick="openSection('trening')">
+      <div class="home-card-ico" style="background:#FAEEDA">🏋️</div>
+      <div class="home-card-body">
+        <div class="home-card-title">Trening</div>
+        <div class="home-card-sub">Plan treningowy, postępy, wyniki</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="app-ja" style="display:none">
+  <button class="back-btn" onclick="goHome()">‹ Wróć</button>
+  <div class="section-header">
+    <div class="section-ico" style="background:#E1F5EE">🙋</div>
+    <div class="section-name">Ja</div>
+  </div>
 
 <div class="cel-box">
   <div class="cel-label">&#9679; Cel 2029</div>
@@ -159,7 +231,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="nav-tabs">
   <div class="ntab active" onclick="switchPage('plan',this)">&#128197; Plan</div>
   <div class="ntab" onclick="switchPage('habits',this)">&#128293; Nawyki</div>
-  <div class="ntab" onclick="switchPage('daily',this)">&#10003; Dzisiaj</div>
   <div class="ntab" onclick="switchPage('health',this)">&#128170; Zdrowie</div>
 </div>
 
@@ -234,22 +305,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="habit-summary"></div>
 </div>
 
-<div id="page-daily" class="page">
-  <div class="sec-label">Fundamenty codzienne</div>
-  <div class="acc">
-    <div class="acc-h" onclick="togAcc('daily')">
-      <div class="acc-ico" style="background:#E1F5EE">&#10003;</div>
-      <div class="acc-title">Dzisiaj</div>
-      <div class="acc-meta" id="daily-meta">0/5</div>
-      <span class="acc-chev" id="chev-daily">&#8964;</span>
-    </div>
-    <div class="acc-body" id="body-daily">
-      <div id="daily-list"></div>
-      <div class="prog-bar"><div class="prog-fill" id="prog-daily" style="width:0%"></div></div>
-    </div>
-  </div>
-</div>
-
 <div id="page-health" class="page">
   <div class="sec-label">Ten tydzień</div>
   <div class="hweek-grid" id="hweek-grid"></div>
@@ -267,12 +322,39 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="divider"></div>
   <div class="sec-label">Średnia z 7 dni</div>
   <div class="h-sum-grid" id="h-summary"></div>
+
+  <div class="divider"></div>
+  <div class="sec-label">Archiwum tygodni</div>
+  <div id="h-weekly-archive"></div>
 </div>
 
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<div class="app" id="app-praca" style="display:none">
+  <button class="back-btn" onclick="goHome()">‹ Wróć</button>
+  <div class="section-header">
+    <div class="section-ico" style="background:#E6F1FB">💼</div>
+    <div class="section-name">Praca</div>
+  </div>
+  <div class="empty-section">
+    <div class="empty-ico">🚧</div>
+    <div class="empty-txt">Sekcja w budowie</div>
+    <div class="empty-sub">Tu pojawią się projekty, zadania i postępy</div>
+  </div>
+</div>
+
+<div class="app" id="app-trening" style="display:none">
+  <button class="back-btn" onclick="goHome()">‹ Wróć</button>
+  <div class="section-header">
+    <div class="section-ico" style="background:#FAEEDA">🏋️</div>
+    <div class="section-name">Trening</div>
+  </div>
+  <div class="empty-section">
+    <div class="empty-ico">🚧</div>
+    <div class="empty-txt">Sekcja w budowie</div>
+    <div class="empty-sub">Tu pojawi się plan treningowy i wyniki</div>
+  </div>
+</div>
 
 <script>
 const firebaseConfig = {
@@ -314,28 +396,19 @@ const MONTHS_DEF=[
 const DAYS=['Pn','Wt','Śr','Czw','Pt','Sb','Nd'];
 const MP=['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
 const DP=['Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota','Niedziela'];
-const DAILY_DEF=['Trening','60 min nad przyszłością','Coś do systemu (pomysł / link)','Kontrola wydatków','Brak dopaminowego syfu'];
 
 let S={};
 function load(){
-  try{
-    S=JSON.parse(localStorage.getItem('dash_v3')||'{}');
-  }catch(e){
-    S={};
-  }
-
+  try{S=JSON.parse(localStorage.getItem('dash_v3')||'{}');}catch(e){S={};}
   if(!S.cel) S.cel='Własna marka meblowa · 30k+/mies · dom koło Częstochowy · rodzina · wolność finansowa';
   if(!S.tasks) S.tasks={};
   if(!S.checks) S.checks={};
-  if(!S.dailyTasks) S.dailyTasks=[...DAILY_DEF];
-  if(!S.dailyChecks) S.dailyChecks={};
   if(!S.note) S.note='';
   if(!S.weekTasks) S.weekTasks={};
   if(!S.weekChecks) S.weekChecks={};
   if(!S.activeMonth) S.activeMonth='maj';
-  if(!S.habits) S.habits=[];
+  if(!S.habits) S.habits={};
   if(!S.hdata) S.hdata={};
-
   MONTHS_DEF.forEach(m=>m.sections.forEach(sec=>{
     if(!S.tasks[sec.id]) S.tasks[sec.id]=[...sec.tasks];
     if(!S.checks[sec.id]) S.checks[sec.id]={};
@@ -359,11 +432,27 @@ function switchPage(id,tab){
   tab.classList.add('active');
 }
 
+function openSection(id){
+  document.getElementById('home-screen').style.display='none';
+  document.getElementById('app-ja').style.display='none';
+  document.getElementById('app-praca').style.display='none';
+  document.getElementById('app-trening').style.display='none';
+  document.getElementById('app-'+id).style.display='block';
+  window.scrollTo(0,0);
+}
+
+function goHome(){
+  document.getElementById('home-screen').style.display='flex';
+  document.getElementById('app-ja').style.display='none';
+  document.getElementById('app-praca').style.display='none';
+  document.getElementById('app-trening').style.display='none';
+  window.scrollTo(0,0);
+}
+
 function render(){
   document.getElementById('cel-text').textContent=S.cel;
   renderMonthTabs();
   renderWeek();
-  renderDaily();
   renderCal();
   renderHabitSummary();
   document.getElementById('weekly-note').value=S.note||'';
@@ -490,36 +579,6 @@ function updateWeekMeta(){
   let done=0,total=0;
   DAYS.forEach(d=>{const t=S.weekTasks[d]||[];const c=S.weekChecks[d]||{};total+=t.length;done+=t.filter((_,i)=>c[i]).length;});
   const m=document.getElementById('week-meta');if(m)m.textContent=done+'/'+total;
-}
-
-function renderDaily(){
-  const list=document.getElementById('daily-list');if(!list)return;list.innerHTML='';
-  S.dailyTasks.forEach((t,i)=>{
-    const row=document.createElement('div');row.className='task-row';
-    const cb=document.createElement('input');cb.type='checkbox';cb.className='task-cb';cb.checked=!!S.dailyChecks[i];
-    cb.onchange=()=>{S.dailyChecks[i]=cb.checked;save();refreshDaily();updateStats();};
-    const lbl=document.createElement('div');lbl.className='task-lbl'+(cb.checked?' done':'');
-    lbl.contentEditable='true';lbl.spellcheck=false;lbl.textContent=t;
-    lbl.onblur=()=>{S.dailyTasks[i]=lbl.textContent;save();};
-    lbl.onclick=()=>{if(!window.getSelection().toString())cb.click();};
-    const del=document.createElement('button');del.className='task-del';del.innerHTML='&#10005;';
-    del.onclick=()=>{
-      S.dailyTasks.splice(i,1);
-      const c={};Object.keys(S.dailyChecks).forEach(k=>{const ki=parseInt(k);if(ki<i)c[k]=S.dailyChecks[k];else if(ki>i)c[ki-1]=S.dailyChecks[k];});
-      S.dailyChecks=c;save();renderDaily();updateStats();
-    };
-    row.appendChild(cb);row.appendChild(lbl);row.appendChild(del);list.appendChild(row);
-  });
-  const ab=document.createElement('button');ab.className='add-btn';ab.innerHTML='&#43; dodaj fundament';
-  ab.onclick=()=>{S.dailyTasks.push('Nowy fundament');save();renderDaily();};
-  list.appendChild(ab);refreshDaily();
-}
-function refreshDaily(){
-  const done=S.dailyTasks.filter((_,i)=>S.dailyChecks[i]).length;
-  const total=S.dailyTasks.length;
-  const pct=total?Math.round(done/total*100):0;
-  const m=document.getElementById('daily-meta');const p=document.getElementById('prog-daily');
-  if(m)m.textContent=done+'/'+total;if(p)p.style.width=pct+'%';
 }
 
 function renderCal(){
@@ -741,6 +800,99 @@ function renderHSummary(){
     </div>`;
   });
   el.innerHTML=html||'<div style="font-size:13px;color:#aaa;grid-column:1/-1">Zacznij logować żeby zobaczyć statystyki.</div>';
+  renderWeeklyArchive();
+}
+
+function getISOWeek(date){
+  const d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));
+  const day=d.getUTCDay()||7;
+  d.setUTCDate(d.getUTCDate()+4-day);
+  const yearStart=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return{week:Math.ceil((((d-yearStart)/86400000)+1)/7),year:d.getUTCFullYear()};
+}
+
+function getWeekDays(year,week){
+  // Poniedziałek danego tygodnia ISO
+  const jan4=new Date(Date.UTC(year,0,4));
+  const day=jan4.getUTCDay()||7;
+  const mon=new Date(jan4);
+  mon.setUTCDate(jan4.getUTCDate()-day+1+(week-1)*7);
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setUTCDate(mon.getUTCDate()+i);
+    days.push(dk(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));
+  }
+  return days;
+}
+
+function renderWeeklyArchive(){
+  const el=document.getElementById('h-weekly-archive');if(!el)return;
+  // Zbierz wszystkie tygodnie z danych (tylko zakończone)
+  const weeksMap={};
+  const todayKey=tdk();
+  Object.keys(S.hlog||{}).forEach(k=>{
+    if(k>=todayKey) return; // pomijamy bieżący i przyszłe
+    const parts=k.split('-');
+    const d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+    const{week,year}=getISOWeek(d);
+    const wKey=year+'-W'+String(week).padStart(2,'0');
+    if(!weeksMap[wKey])weeksMap[wKey]={week,year,wKey};
+  });
+  // Pomiń bieżący tydzień
+  const{week:curWeek,year:curYear}=getISOWeek(now);
+  const curWKey=curYear+'-W'+String(curWeek).padStart(2,'0');
+  delete weeksMap[curWKey];
+
+  const weeks=Object.values(weeksMap).sort((a,b)=>b.wKey.localeCompare(a.wKey));
+  if(weeks.length===0){
+    el.innerHTML='<div style="font-size:13px;color:#aaa;padding:.5rem 0">Zakończone tygodnie pojawią się tutaj automatycznie.</div>';
+    return;
+  }
+  let html='';
+  weeks.forEach(({week,year,wKey})=>{
+    const days=getWeekDays(year,week);
+    const mon=days[0].split('-');const sun=days[6].split('-');
+    const dateRange=parseInt(mon[2])+'.'+mon[1]+' – '+parseInt(sun[2])+'.'+sun[1]+'.'+sun[0];
+    let metricsHtml='';
+    S.metrics.forEach(m=>{
+      const vals=days.map(k=>S.hlog[k]&&S.hlog[k][m.name]?parseFloat(S.hlog[k][m.name]):null).filter(v=>v!==null);
+      if(vals.length===0)return;
+      const avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10;
+      const sum=Math.round(vals.reduce((a,b)=>a+b,0)*10)/10;
+      // Dla kroków i kcal pokaż sumę, dla reszty średnią
+      const showSum=['Kroki','Kcal'].includes(m.name);
+      metricsHtml+=`<div class="week-archive-card">
+        <div class="week-archive-card-label">${m.ico||'●'} ${m.name}</div>
+        <div class="week-archive-card-val">${showSum?sum:avg}</div>
+        <div class="week-archive-card-sub">${showSum?'suma '+m.unit:'śr. '+m.unit+' · '+vals.length+'/7 dni'}</div>
+      </div>`;
+    });
+    if(!metricsHtml)return;
+    html+=`<div class="week-archive-item">
+      <div class="week-archive-header" onclick="togWeekArchive('${wKey}')">
+        <div>
+          <div class="week-archive-title" style="display:flex;align-items:center;gap:8px">
+            <span class="week-badge">${week}. tydzień ${year}</span>
+          </div>
+          <div class="week-archive-sub">${dateRange}</div>
+        </div>
+        <span class="week-archive-chev" id="wchev-${wKey}">⌄</span>
+      </div>
+      <div class="week-archive-body" id="wbody-${wKey}">
+        <div class="week-archive-grid">${metricsHtml}</div>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html||'<div style="font-size:13px;color:#aaa">Brak danych do wyświetlenia.</div>';
+}
+
+function togWeekArchive(wKey){
+  const body=document.getElementById('wbody-'+wKey);
+  const chev=document.getElementById('wchev-'+wKey);
+  if(!body||!chev)return;
+  const open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  chev.classList.toggle('open',!open);
 }
 
 document.getElementById('cel-text').addEventListener('blur',function(){S.cel=this.textContent;save();});
@@ -748,28 +900,23 @@ document.getElementById('weekly-note').addEventListener('input',function(){S.not
 
 db.ref('dashboard').once('value').then(function(snapshot){
   if(snapshot.exists()){
-    S = snapshot.val();
+    S=snapshot.val();
   }else{
     load();
   }
-
   if(!S.cel) S.cel='Własna marka meblowa · 30k+/mies · dom koło Częstochowy · rodzina · wolność finansowa';
   if(!S.tasks) S.tasks={};
   if(!S.checks) S.checks={};
-  if(!S.dailyTasks) S.dailyTasks=[...DAILY_DEF];
-  if(!S.dailyChecks) S.dailyChecks={};
   if(!S.note) S.note='';
   if(!S.weekTasks) S.weekTasks={};
   if(!S.weekChecks) S.weekChecks={};
   if(!S.activeMonth) S.activeMonth='maj';
   if(!S.habits) S.habits=[];
   if(!S.hdata) S.hdata={};
-
   MONTHS_DEF.forEach(m=>m.sections.forEach(sec=>{
     if(!S.tasks[sec.id]) S.tasks[sec.id]=[...sec.tasks];
     if(!S.checks[sec.id]) S.checks[sec.id]={};
   }));
-
   initHealth();
   save();
   render();
