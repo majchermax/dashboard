@@ -98,6 +98,74 @@ function render(){
   renderHabitSummary();
   document.getElementById('weekly-note').value=S.note||'';
   updateStats();
+  renderHome();
+}
+
+function getMonthProgress(){
+  const m=MONTHS_DEF.find(x=>x.id===S.activeMonth)||MONTHS_DEF[0];
+  let done=0,total=0;
+  if(m)m.sections.forEach(sec=>{
+    const t=S.tasks[sec.id]||[];
+    const c=S.checks[sec.id]||{};
+    total+=t.length;
+    done+=t.filter((_,i)=>c[i]).length;
+  });
+  return {month:m,done,total,pct:total?Math.round(done/total*100):0};
+}
+
+function getTodayWeekKey(){
+  const jsDay=now.getDay();
+  const index=jsDay===0?6:jsDay-1;
+  return DAYS[index];
+}
+
+function renderHome(){
+  const dateEl=document.getElementById('home-date');
+  if(!dateEl)return;
+
+  const todayName=DP[now.getDay()===0?6:now.getDay()-1];
+  dateEl.textContent=todayName+' · '+now.getDate()+'.'+String(now.getMonth()+1).padStart(2,'0');
+
+  const progress=getMonthProgress();
+  document.getElementById('home-month-label').textContent=progress.month?progress.month.label:'Plan';
+  document.getElementById('home-month-progress').textContent=progress.done+' z '+progress.total+' zadań zrobione';
+  document.getElementById('home-progress-pct').textContent=progress.pct+'%';
+  const ring=document.getElementById('home-progress-ring');
+  if(ring){
+    const full=326.73;
+    ring.style.strokeDashoffset=String(full-(full*progress.pct/100));
+  }
+
+  const dayKey=getTodayWeekKey();
+  const dayTasks=S.weekTasks[dayKey]||[];
+  const dayChecks=S.weekChecks[dayKey]||{};
+  const doneToday=dayTasks.filter((_,i)=>dayChecks[i]).length;
+  document.getElementById('home-today-tasks').textContent=doneToday+'/'+dayTasks.length;
+
+  const habitData=S.hdata[tdk()]||{};
+  const doneHabits=S.habits.filter(h=>habitData[h]).length;
+  document.getElementById('home-habit-score').textContent=doneHabits+'/'+S.habits.length;
+
+  const healthData=S.hlog&&S.hlog[tdk()]?S.hlog[tdk()]:{};
+  document.getElementById('home-health-score').textContent=Object.keys(healthData).length;
+
+  const focus=[];
+  if(progress.month){
+    progress.month.sections.forEach(sec=>{
+      const tasks=S.tasks[sec.id]||[];
+      const checks=S.checks[sec.id]||{};
+      tasks.forEach((task,i)=>{
+        if(!checks[i]&&focus.length<3)focus.push(task);
+      });
+    });
+  }
+  const focusEl=document.getElementById('home-focus-list');
+  focusEl.innerHTML=focus.length?focus.map(task=>`
+    <div class="home-focus-item">
+      <span class="home-focus-dot"></span>
+      <span>${task}</span>
+    </div>
+  `).join(''):'<div class="home-focus-empty">Na dziś wygląda czysto. Możesz dopisać zadanie w planie tygodnia.</div>';
 }
 
 function renderMonthTabs(){
@@ -212,6 +280,7 @@ function renderWeek(){
     cell.innerHTML=html;grid.appendChild(cell);
   });
   updateWeekMeta();
+  renderHome();
 }
 function toggleWT(d,i,val){if(!S.weekChecks[d])S.weekChecks[d]={};S.weekChecks[d][i]=val;save();renderWeek();}
 function editWT(d,i,el){if(!S.weekTasks[d])S.weekTasks[d]=[];S.weekTasks[d][i]=el.textContent;save();}
@@ -311,6 +380,7 @@ function renderHabitSummary(){
   document.getElementById('habit-summary').innerHTML=html||'<div style="font-size:13px;color:#aaa">Kliknij na dzień w kalendarzu żeby dodać nawyki.</div>';
   document.getElementById('best-streak').textContent=bestStreak+' dni';
   document.getElementById('best-streak-name').textContent=bestName;
+  renderHome();
 }
 
 function updateStats(){
@@ -322,6 +392,7 @@ function updateStats(){
   S.habits.forEach(h=>{const{longest}=calcStreak(h);if(longest>bestStreak){bestStreak=longest;bestName=h;}});
   document.getElementById('stat-streak').textContent=bestStreak+' dni';
   document.getElementById('stat-streak-name').textContent=bestName;
+  renderHome();
 }
 
 const WDAYS_SHORT=['Nd','Pn','Wt','Śr','Cz','Pt','Sb'];
@@ -442,6 +513,7 @@ function renderHSummary(){
   });
   el.innerHTML=html||'<div style="font-size:13px;color:#aaa;grid-column:1/-1">Zacznij logować żeby zobaczyć statystyki.</div>';
   renderWeeklyArchive();
+  renderHome();
 }
 
 function getISOWeek(date){

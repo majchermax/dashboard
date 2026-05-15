@@ -1,18 +1,47 @@
 ﻿*{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f2;color:#1a1a1a;min-height:100vh}
 .app{max-width:600px;margin:0 auto;padding:1rem}
-.home-screen{max-width:600px;margin:0 auto;padding:2rem 1rem;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
-.home-title{font-size:22px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
-.home-sub{font-size:13px;color:#aaa;margin-bottom:2rem}
-.home-cards{display:flex;flex-direction:column;gap:12px}
-.home-card{background:#fff;border:.5px solid #e5e5e0;border-radius:16px;padding:1.25rem 1.5rem;cursor:pointer;display:flex;align-items:center;gap:16px;transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent}
-.home-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.home-screen{min-height:100vh;background:#05070B;color:#F4F8FF;padding:1rem;display:block}
+.home-shell{max-width:600px;margin:0 auto;padding:1.25rem 0 2rem}
+.home-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}
+.home-kicker{font-size:11px;color:#58B7FF;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.home-title{font-size:30px;font-weight:700;color:#F4F8FF;margin-bottom:6px;line-height:1.05}
+.home-sub{font-size:13px;color:#7F8DA3;line-height:1.45;max-width:330px}
+.home-date{border:1px solid rgba(88,183,255,.25);background:rgba(88,183,255,.1);border-radius:14px;color:#B8E2FF;font-size:12px;font-weight:600;padding:9px 11px;white-space:nowrap}
+.home-hero{background:linear-gradient(145deg,#0B1220,#071F35 52%,#063A66);border:1px solid rgba(88,183,255,.22);border-radius:24px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 24px 60px rgba(0,0,0,.42);margin-bottom:12px}
+.home-hero-copy{min-width:0}
+.home-hero-label{font-size:11px;color:#58B7FF;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.home-hero-title{font-size:20px;color:#fff;font-weight:700;margin-bottom:6px}
+.home-hero-sub{font-size:13px;color:#A9B8CA;line-height:1.4}
+.home-ring{width:116px;height:116px;position:relative;flex:0 0 116px}
+.home-ring svg{width:116px;height:116px;transform:rotate(-90deg)}
+.home-ring-bg,.home-ring-fill{fill:none;stroke-width:10}
+.home-ring-bg{stroke:rgba(255,255,255,.1)}
+.home-ring-fill{stroke:#31AFFF;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:326.73;transition:stroke-dashoffset .35s}
+.home-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff}
+.home-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.home-metric{background:#0B111C;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px;min-width:0}
+.home-metric-label{display:block;font-size:10px;color:#58B7FF;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:6px}
+.home-metric strong{display:block;font-size:20px;color:#fff;line-height:1;margin-bottom:5px}
+.home-metric span:last-child{font-size:11px;color:#7F8DA3}
+.home-panel{background:#0B111C;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:16px;margin-bottom:12px}
+.home-panel-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.home-panel-label{font-size:10px;color:#58B7FF;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px}
+.home-panel-title{font-size:15px;font-weight:700;color:#fff}
+.home-mini-btn{border:1px solid rgba(88,183,255,.28);background:#0B2B47;color:#B8E2FF;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.home-focus-list{display:flex;flex-direction:column;gap:8px}
+.home-focus-item{display:flex;gap:9px;align-items:flex-start;color:#DDEBFA;font-size:13px;line-height:1.35}
+.home-focus-dot{width:7px;height:7px;background:#31AFFF;border-radius:50%;margin-top:5px;flex-shrink:0;box-shadow:0 0 18px rgba(49,175,255,.8)}
+.home-focus-empty{color:#7F8DA3;font-size:13px}
+.home-cards{display:grid;grid-template-columns:1fr;gap:10px}
+.home-card{width:100%;background:#0B111C;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:1rem 1.1rem;cursor:pointer;display:flex;align-items:center;gap:14px;transition:transform .1s,box-shadow .1s,border-color .1s;-webkit-tap-highlight-color:transparent;color:inherit;text-align:left;font-family:inherit}
+.home-card:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,0,0,.26);border-color:rgba(88,183,255,.35)}
 .home-card:active{transform:translateY(0)}
-.home-card-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.home-card-ico{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:rgba(88,183,255,.12)}
 .home-card-body{flex:1}
-.home-card-title{font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:3px}
-.home-card-sub{font-size:12px;color:#aaa}
-.home-card-arrow{font-size:18px;color:#ccc}
+.home-card-title{font-size:15px;font-weight:700;color:#F4F8FF;margin-bottom:3px}
+.home-card-sub{font-size:12px;color:#7F8DA3}
+.home-card-arrow{font-size:22px;color:#58B7FF}
 .back-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;padding:.5rem 0;margin-bottom:.75rem;background:none;border:none;font-family:inherit}
 .back-btn:hover{color:#1a1a1a}
 .section-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem}

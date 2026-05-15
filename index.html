@@ -18,32 +18,85 @@
 </head>
 <body>
 <div class="home-screen" id="home-screen">
-  <div class="home-title">Cześć 👋</div>
-  <div class="home-sub">Co dziś ogarniamy?</div>
-  <div class="home-cards">
-    <div class="home-card" onclick="openSection('ja')">
-      <div class="home-card-ico" style="background:#E1F5EE">🙋</div>
-      <div class="home-card-body">
-        <div class="home-card-title">Ja</div>
-        <div class="home-card-sub">Cele, nawyki, zdrowie, plan miesięczny</div>
+  <div class="home-shell">
+    <div class="home-top">
+      <div>
+        <div class="home-kicker">Dashboard</div>
+        <div class="home-title">Cześć, Max</div>
+        <div class="home-sub">Dzisiejszy kokpit do ogarniania najważniejszych rzeczy.</div>
       </div>
-      <div class="home-card-arrow">›</div>
+      <div class="home-date" id="home-date">—</div>
     </div>
-    <div class="home-card" onclick="openSection('praca')">
-      <div class="home-card-ico" style="background:#E6F1FB">💼</div>
-      <div class="home-card-body">
-        <div class="home-card-title">Praca</div>
-        <div class="home-card-sub">Projekty, zadania, postępy</div>
+
+    <div class="home-hero">
+      <div class="home-hero-copy">
+        <div class="home-hero-label">Focus miesiąca</div>
+        <div class="home-hero-title" id="home-month-label">—</div>
+        <div class="home-hero-sub" id="home-month-progress">0 z 0 zadań zrobione</div>
       </div>
-      <div class="home-card-arrow">›</div>
+      <div class="home-ring" aria-label="Postęp miesiąca">
+        <svg viewBox="0 0 120 120">
+          <circle class="home-ring-bg" cx="60" cy="60" r="52"></circle>
+          <circle class="home-ring-fill" id="home-progress-ring" cx="60" cy="60" r="52"></circle>
+        </svg>
+        <div class="home-ring-text" id="home-progress-pct">0%</div>
+      </div>
     </div>
-    <div class="home-card" onclick="openSection('trening')">
-      <div class="home-card-ico" style="background:#FAEEDA">🏋️</div>
-      <div class="home-card-body">
-        <div class="home-card-title">Trening</div>
-        <div class="home-card-sub">Plan treningowy, postępy, wyniki</div>
+
+    <div class="home-metrics">
+      <div class="home-metric">
+        <span class="home-metric-label">Dziś</span>
+        <strong id="home-today-tasks">0/0</strong>
+        <span>zadania</span>
       </div>
-      <div class="home-card-arrow">›</div>
+      <div class="home-metric">
+        <span class="home-metric-label">Nawyki</span>
+        <strong id="home-habit-score">0/0</strong>
+        <span>odhaczone</span>
+      </div>
+      <div class="home-metric">
+        <span class="home-metric-label">Zdrowie</span>
+        <strong id="home-health-score">0</strong>
+        <span>wpisy dziś</span>
+      </div>
+    </div>
+
+    <div class="home-panel">
+      <div class="home-panel-top">
+        <div>
+          <div class="home-panel-label">Najbliższy ruch</div>
+          <div class="home-panel-title">Co warto ruszyć teraz</div>
+        </div>
+        <button class="home-mini-btn" onclick="openSection('ja')">Plan</button>
+      </div>
+      <div class="home-focus-list" id="home-focus-list"></div>
+    </div>
+
+    <div class="home-cards">
+      <button class="home-card" onclick="openSection('ja')">
+        <div class="home-card-ico">🙋</div>
+        <div class="home-card-body">
+          <div class="home-card-title">Ja</div>
+          <div class="home-card-sub">Cele, nawyki, zdrowie, plan miesięczny</div>
+        </div>
+        <div class="home-card-arrow">›</div>
+      </button>
+      <button class="home-card" onclick="openSection('praca')">
+        <div class="home-card-ico">💼</div>
+        <div class="home-card-body">
+          <div class="home-card-title">Praca</div>
+          <div class="home-card-sub">Projekty, zadania, postępy</div>
+        </div>
+        <div class="home-card-arrow">›</div>
+      </button>
+      <button class="home-card" onclick="openSection('trening')">
+        <div class="home-card-ico">🏋️</div>
+        <div class="home-card-body">
+          <div class="home-card-title">Trening</div>
+          <div class="home-card-sub">Plan treningowy, postępy, wyniki</div>
+        </div>
+        <div class="home-card-arrow">›</div>
+      </button>
     </div>
   </div>
 </div>
