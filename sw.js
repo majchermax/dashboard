@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dashboard-shell-v4';
+const CACHE_NAME = 'dashboard-shell-v5';
 const APP_SHELL = [
   './',
   './index.html',

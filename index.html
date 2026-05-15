@@ -44,30 +44,25 @@
     </div>
 
     <div class="home-metrics">
-      <div class="home-metric">
-        <span class="home-metric-label">Dziś</span>
-        <strong id="home-today-tasks">0/0</strong>
-        <span>zadania</span>
-      </div>
-      <div class="home-metric">
+      <button class="home-metric" onclick="openJaPage('habits')">
         <span class="home-metric-label">Nawyki</span>
         <strong id="home-habit-score">0/0</strong>
         <span>odhaczone</span>
-      </div>
-      <div class="home-metric">
+      </button>
+      <button class="home-metric" onclick="openJaPage('health')">
         <span class="home-metric-label">Zdrowie</span>
         <strong id="home-health-score">0</strong>
         <span>wpisy dziś</span>
-      </div>
+      </button>
     </div>
 
     <div class="home-panel">
       <div class="home-panel-top">
         <div>
-          <div class="home-panel-label">Najbliższy ruch</div>
-          <div class="home-panel-title">Co warto ruszyć teraz</div>
+          <div class="home-panel-label">Plan dnia</div>
+          <div class="home-panel-title">Zadania na dziś</div>
         </div>
-        <button class="home-mini-btn" onclick="openSection('ja')">Plan</button>
+        <button class="home-mini-btn" onclick="openDailyCalendarToday()">Kalendarz</button>
       </div>
       <div class="home-focus-list" id="home-focus-list"></div>
     </div>
@@ -137,6 +132,37 @@
   <div class="sec-label">Miesięczny focus</div>
   <div class="mtabs" id="month-tabs"></div>
   <div id="month-panels"></div>
+  <div class="divider"></div>
+  <div class="sec-label">Kalendarz zadań</div>
+  <div class="acc" style="margin-bottom:10px">
+    <div style="padding:1rem">
+      <div class="cal-nav">
+        <button class="cal-btn" onclick="changeTaskMonth(-1)">&#8592;</button>
+        <div class="cal-title" id="task-cal-title"></div>
+        <button class="cal-btn" onclick="changeTaskMonth(1)">&#8594;</button>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-dow">Pn</div><div class="cal-dow">Wt</div><div class="cal-dow">Śr</div>
+        <div class="cal-dow">Cz</div><div class="cal-dow">Pt</div><div class="cal-dow">Sb</div><div class="cal-dow">Nd</div>
+        <div id="task-cal-cells" style="display:contents"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-wrap" id="task-day-modal">
+    <div class="modal-inner">
+      <div class="modal-top">
+        <span id="task-modal-date-label"></span>
+        <button class="close-btn" onclick="closeTaskModal()">&#10005;</button>
+      </div>
+      <div id="task-day-list"></div>
+      <div class="add-habit-row">
+        <input class="add-habit-input" id="new-day-task-input" placeholder="Dodaj ważne zadanie..." onkeydown="if(event.key==='Enter')addDayTask()">
+        <button class="add-habit-btn" onclick="addDayTask()">+ Dodaj</button>
+      </div>
+    </div>
+  </div>
+
   <div class="divider"></div>
   <div class="sec-label">Tygodniowy plan</div>
   <div class="acc">

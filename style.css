@@ -19,8 +19,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .home-ring-bg{stroke:rgba(255,255,255,.1)}
 .home-ring-fill{stroke:#31AFFF;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:326.73;transition:stroke-dashoffset .35s}
 .home-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff}
-.home-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
-.home-metric{background:#0B111C;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px;min-width:0}
+.home-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.home-metric{background:#0B111C;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px;min-width:0;color:inherit;text-align:left;font-family:inherit;cursor:pointer}
+.home-metric:hover{border-color:rgba(88,183,255,.35);background:#111A2A}
 .home-metric-label{display:block;font-size:10px;color:#58B7FF;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:6px}
 .home-metric strong{display:block;font-size:20px;color:#fff;line-height:1;margin-bottom:5px}
 .home-metric span:last-child{font-size:11px;color:#7F8DA3}
@@ -32,7 +33,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .home-focus-list{display:flex;flex-direction:column;gap:8px}
 .home-focus-item{display:flex;gap:9px;align-items:flex-start;color:#DDEBFA;font-size:13px;line-height:1.35}
 .home-focus-dot{width:7px;height:7px;background:#31AFFF;border-radius:50%;margin-top:5px;flex-shrink:0;box-shadow:0 0 18px rgba(49,175,255,.8)}
-.home-focus-empty{color:#7F8DA3;font-size:13px}
+.home-focus-empty{color:#7F8DA3;font-size:13px;background:none;border:none;text-align:left;font-family:inherit;cursor:pointer;padding:0}
+.home-focus-check{width:16px;height:16px;margin-top:1px;flex-shrink:0;accent-color:#31AFFF}
+.home-focus-task{background:none;border:none;color:#DDEBFA;text-align:left;font-size:13px;line-height:1.35;font-family:inherit;cursor:pointer;padding:0;flex:1}
+.home-focus-task.done{color:#7F8DA3;text-decoration:line-through}
 .home-cards{display:grid;grid-template-columns:1fr;gap:10px}
 .home-card{width:100%;background:#0B111C;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:1rem 1.1rem;cursor:pointer;display:flex;align-items:center;gap:14px;transition:transform .1s,box-shadow .1s,border-color .1s;-webkit-tap-highlight-color:transparent;color:inherit;text-align:left;font-family:inherit}
 .home-card:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,0,0,.26);border-color:rgba(88,183,255,.35)}

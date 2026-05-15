@@ -50,6 +50,8 @@ function load(){
   if(!S.activeMonth) S.activeMonth='maj';
   if(!S.habits) S.habits={};
   if(!S.hdata) S.hdata={};
+  if(!S.dayTasks) S.dayTasks={};
+  if(!S.dayChecks) S.dayChecks={};
   MONTHS_DEF.forEach(m=>m.sections.forEach(sec=>{
     if(!S.tasks[sec.id]) S.tasks[sec.id]=[...sec.tasks];
     if(!S.checks[sec.id]) S.checks[sec.id]={};
@@ -63,6 +65,7 @@ function save(){
 
 const now=new Date();
 let viewYear=now.getFullYear(),viewMonth=now.getMonth(),selDate=null;
+let taskViewYear=now.getFullYear(),taskViewMonth=now.getMonth(),taskSelDate=null;
 function dk(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
 function tdk(){return dk(now.getFullYear(),now.getMonth(),now.getDate());}
 
@@ -70,7 +73,8 @@ function switchPage(id,tab){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  tab.classList.add('active');
+  if(tab)tab.classList.add('active');
+  else document.querySelectorAll('.ntab').forEach(t=>{if(t.getAttribute('onclick')&&t.getAttribute('onclick').includes("'"+id+"'"))t.classList.add('active');});
 }
 
 function openSection(id){
@@ -90,9 +94,25 @@ function goHome(){
   window.scrollTo(0,0);
 }
 
+function openJaPage(page){
+  openSection('ja');
+  switchPage(page,null);
+}
+
+function openDailyCalendarToday(){
+  openJaPage('plan');
+  const parts=tdk().split('-');
+  taskViewYear=parseInt(parts[0]);
+  taskViewMonth=parseInt(parts[1])-1;
+  taskSelDate=tdk();
+  renderTaskCal();
+  openTaskModal(taskSelDate);
+}
+
 function render(){
   document.getElementById('cel-text').textContent=S.cel;
   renderMonthTabs();
+  renderTaskCal();
   renderWeek();
   renderCal();
   renderHabitSummary();
@@ -136,12 +156,6 @@ function renderHome(){
     ring.style.strokeDashoffset=String(full-(full*progress.pct/100));
   }
 
-  const dayKey=getTodayWeekKey();
-  const dayTasks=S.weekTasks[dayKey]||[];
-  const dayChecks=S.weekChecks[dayKey]||{};
-  const doneToday=dayTasks.filter((_,i)=>dayChecks[i]).length;
-  document.getElementById('home-today-tasks').textContent=doneToday+'/'+dayTasks.length;
-
   const habitData=S.hdata[tdk()]||{};
   const doneHabits=S.habits.filter(h=>habitData[h]).length;
   document.getElementById('home-habit-score').textContent=doneHabits+'/'+S.habits.length;
@@ -149,23 +163,15 @@ function renderHome(){
   const healthData=S.hlog&&S.hlog[tdk()]?S.hlog[tdk()]:{};
   document.getElementById('home-health-score').textContent=Object.keys(healthData).length;
 
-  const focus=[];
-  if(progress.month){
-    progress.month.sections.forEach(sec=>{
-      const tasks=S.tasks[sec.id]||[];
-      const checks=S.checks[sec.id]||{};
-      tasks.forEach((task,i)=>{
-        if(!checks[i]&&focus.length<3)focus.push(task);
-      });
-    });
-  }
+  const focus=S.dayTasks[tdk()]||[];
+  const focusChecks=S.dayChecks[tdk()]||{};
   const focusEl=document.getElementById('home-focus-list');
-  focusEl.innerHTML=focus.length?focus.map(task=>`
+  focusEl.innerHTML=focus.length?focus.map((task,i)=>`
     <div class="home-focus-item">
-      <span class="home-focus-dot"></span>
-      <span>${task}</span>
+      <input type="checkbox" class="home-focus-check" ${focusChecks[i]?'checked':''} onchange="toggleDayTask('${tdk()}',${i},this.checked)">
+      <button class="home-focus-task${focusChecks[i]?' done':''}" onclick="openDailyCalendarToday()">${task}</button>
     </div>
-  `).join(''):'<div class="home-focus-empty">Na dziś wygląda czysto. Możesz dopisać zadanie w planie tygodnia.</div>';
+  `).join(''):'<button class="home-focus-empty" onclick="openDailyCalendarToday()">Brak zadań na dziś. Kliknij, żeby dodać coś do kalendarza.</button>';
 }
 
 function renderMonthTabs(){
@@ -289,6 +295,124 @@ function updateWeekMeta(){
   let done=0,total=0;
   DAYS.forEach(d=>{const t=S.weekTasks[d]||[];const c=S.weekChecks[d]||{};total+=t.length;done+=t.filter((_,i)=>c[i]).length;});
   const m=document.getElementById('week-meta');if(m)m.textContent=done+'/'+total;
+}
+
+function renderTaskCal(){
+  const title=document.getElementById('task-cal-title');
+  const cells=document.getElementById('task-cal-cells');
+  if(!title||!cells)return;
+  title.textContent=MP[taskViewMonth]+' '+taskViewYear;
+  const first=new Date(taskViewYear,taskViewMonth,1);
+  let dow=first.getDay();dow=dow===0?6:dow-1;
+  const days=new Date(taskViewYear,taskViewMonth+1,0).getDate();
+  let html='';
+  for(let i=0;i<dow;i++)html+='<div class="cal-day empty"></div>';
+  for(let d=1;d<=days;d++){
+    const k=dk(taskViewYear,taskViewMonth,d);
+    let cls='cal-day';
+    if(k===tdk())cls+=' today';
+    if(k===taskSelDate)cls+=' sel';
+    if(S.dayTasks[k]&&S.dayTasks[k].length>0)cls+=' has-data';
+    html+=`<div class="${cls}" onclick="selectTaskDay('${k}')">${d}</div>`;
+  }
+  cells.innerHTML=html;
+}
+
+function changeTaskMonth(dir){
+  taskViewMonth+=dir;
+  if(taskViewMonth>11){taskViewMonth=0;taskViewYear++;}
+  if(taskViewMonth<0){taskViewMonth=11;taskViewYear--;}
+  renderTaskCal();
+}
+
+function selectTaskDay(k){
+  taskSelDate=k;
+  renderTaskCal();
+  openTaskModal(k);
+}
+
+function openTaskModal(k){
+  const p=k.split('-');const y=parseInt(p[0]),m=parseInt(p[1])-1,d=parseInt(p[2]);
+  const dobj=new Date(y,m,d);const dow=dobj.getDay();
+  document.getElementById('task-modal-date-label').textContent=DP[dow===0?6:dow-1]+', '+d+' '+MP[m];
+  document.getElementById('task-day-modal').classList.add('open');
+  renderDayTasks(k);
+}
+
+function closeTaskModal(){
+  document.getElementById('task-day-modal').classList.remove('open');
+  taskSelDate=null;
+  renderTaskCal();
+  renderHome();
+}
+
+function renderDayTasks(k){
+  if(!S.dayTasks[k])S.dayTasks[k]=[];
+  if(!S.dayChecks[k])S.dayChecks[k]={};
+  const el=document.getElementById('task-day-list');
+  const tasks=S.dayTasks[k]||[];
+  const checks=S.dayChecks[k]||{};
+  if(tasks.length===0){
+    el.innerHTML='<div class="home-focus-empty">Dodaj pierwsze ważne zadanie na ten dzień.</div>';
+    return;
+  }
+  el.innerHTML='';
+  tasks.forEach((task,i)=>{
+    const row=document.createElement('div');
+    row.className='task-row day-task-row';
+    row.innerHTML=`<input type="checkbox" class="task-cb" ${checks[i]?'checked':''} onchange="toggleDayTask('${k}',${i},this.checked)">
+      <div class="task-lbl${checks[i]?' done':''}" contenteditable="true" spellcheck="false" onblur="editDayTask('${k}',${i},this)">${task}</div>
+      <button class="task-del" onclick="deleteDayTask('${k}',${i})">&#10005;</button>`;
+    el.appendChild(row);
+  });
+}
+
+function addDayTask(){
+  const inp=document.getElementById('new-day-task-input');
+  const val=inp.value.trim();
+  if(!val)return;
+  const k=taskSelDate||tdk();
+  if(!S.dayTasks[k])S.dayTasks[k]=[];
+  if(!S.dayChecks[k])S.dayChecks[k]={};
+  S.dayTasks[k].push(val);
+  inp.value='';
+  save();
+  renderDayTasks(k);
+  renderTaskCal();
+  renderHome();
+}
+
+function toggleDayTask(k,i,val){
+  if(!S.dayChecks[k])S.dayChecks[k]={};
+  S.dayChecks[k][i]=val;
+  save();
+  if(taskSelDate===k)renderDayTasks(k);
+  renderTaskCal();
+  renderHome();
+}
+
+function editDayTask(k,i,el){
+  if(!S.dayTasks[k])S.dayTasks[k]=[];
+  S.dayTasks[k][i]=el.textContent.trim()||'Zadanie';
+  save();
+  renderHome();
+}
+
+function deleteDayTask(k,i){
+  if(!S.dayTasks[k])return;
+  S.dayTasks[k].splice(i,1);
+  const c={};
+  Object.keys(S.dayChecks[k]||{}).forEach(key=>{
+    const ki=parseInt(key);
+    if(ki<i)c[key]=S.dayChecks[k][key];
+    else if(ki>i)c[ki-1]=S.dayChecks[k][key];
+  });
+  S.dayChecks[k]=c;
+  if(S.dayTasks[k].length===0){delete S.dayTasks[k];delete S.dayChecks[k];}
+  save();
+  renderDayTasks(k);
+  renderTaskCal();
+  renderHome();
 }
 
 function renderCal(){
@@ -626,6 +750,8 @@ db.ref('dashboard').once('value').then(function(snapshot){
   if(!S.activeMonth) S.activeMonth='maj';
   if(!S.habits) S.habits=[];
   if(!S.hdata) S.hdata={};
+  if(!S.dayTasks) S.dayTasks={};
+  if(!S.dayChecks) S.dayChecks={};
   MONTHS_DEF.forEach(m=>m.sections.forEach(sec=>{
     if(!S.tasks[sec.id]) S.tasks[sec.id]=[...sec.tasks];
     if(!S.checks[sec.id]) S.checks[sec.id]={};
