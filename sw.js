@@ -1,10 +1,12 @@
-const CACHE_NAME = 'dashboard-shell-v7';
+const CACHE_NAME = 'dashboard-shell-v8';
 const APP_SHELL = [
   './',
   './index.html',
   './style.css',
   './home-nav.css',
+  './import.css',
   './app.js',
+  './import.js',
   './manifest.webmanifest',
   './app-icon.svg'
 ];
