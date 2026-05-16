@@ -1,0 +1,44 @@
+.training-tabs,.training-day-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:5px;margin-bottom:12px;scrollbar-width:none}
+.training-tabs::-webkit-scrollbar,.training-day-tabs::-webkit-scrollbar{display:none}
+.training-tab,.training-day-tab{flex:0 0 auto;border:1px solid rgba(255,255,255,.1);background:#080D15;color:#A9B8CA;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
+.training-tab.active,.training-day-tab.active{background:#0B2B47;color:#B8E2FF;border-color:rgba(88,183,255,.45)}
+.training-page{display:none}
+.training-page.active{display:block}
+.training-exercise{background:#0B111C;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px;margin-bottom:10px}
+.training-exercise-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+.training-exercise-name{font-size:15px;font-weight:850;color:#F4F8FF;line-height:1.25}
+.training-range{font-size:11px;color:#B8E2FF;background:#0B2B47;border:1px solid rgba(88,183,255,.28);border-radius:999px;padding:4px 8px;white-space:nowrap}
+.set-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.set-box{background:#080D15;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:9px;min-width:0}
+.set-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px}
+.set-label{font-size:10px;color:#58B7FF;text-transform:uppercase;letter-spacing:.08em;font-weight:850}
+.copy-set{width:26px;height:24px;border:none;border-radius:8px;background:#0B2B47;color:#B8E2FF;font-size:15px;line-height:1;cursor:pointer}
+.copy-set:disabled{opacity:.25;cursor:default}
+.set-inputs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.set-inputs label,.measurement-grid label{font-size:10px;color:#7F8DA3;text-transform:uppercase;letter-spacing:.06em;font-weight:800}
+.set-inputs input,.measurement-grid input,.measurement-date,.training-note{width:100%;background:#050A12;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#F4F8FF;font-family:inherit;font-size:13px;padding:8px;margin-top:4px}
+.set-inputs input:focus,.measurement-grid input:focus,.measurement-date:focus,.training-note:focus{outline:none;border-color:#58B7FF;background:#0B111C}
+.training-note{min-height:42px;resize:vertical;margin-top:10px;line-height:1.35}
+.training-save-btn{width:100%;border:none;border-radius:14px;background:#0B74BD;color:#fff;padding:12px 14px;font-size:13px;font-weight:850;font-family:inherit;cursor:pointer;margin:4px 0 12px}
+.progress-card,.measurement-card,.measurement-entry{background:#0B111C;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px;margin-bottom:10px}
+.progress-top,.measurement-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+.progress-name{font-size:15px;font-weight:850;color:#F4F8FF}
+.progress-score{font-size:20px;font-weight:900;color:#fff}
+.progress-grid,.measurement-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.progress-stat{background:#080D15;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px}
+.progress-label,.measurement-label{font-size:10px;color:#7F8DA3;text-transform:uppercase;letter-spacing:.08em;font-weight:850;margin-bottom:4px}
+.progress-value,.measurement-value{font-size:14px;color:#DDEBFA;font-weight:800}
+.progress-positive{color:#6CE5B1}
+.progress-empty{color:#7F8DA3;font-size:13px;line-height:1.45}
+.measurement-date{max-width:142px;margin-top:0}
+.measurement-entry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+
+@media (max-width:480px){
+  .training-exercise,.progress-card,.measurement-card,.measurement-entry{border-radius:16px;padding:12px}
+  .training-exercise-top,.progress-top,.measurement-top{display:block}
+  .training-range,.measurement-date{display:inline-block;margin-top:8px}
+  .set-grid{grid-template-columns:1fr}
+  .set-box{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:8px}
+  .set-head{margin-bottom:0}
+  .progress-grid,.measurement-grid,.measurement-entry-grid{grid-template-columns:1fr}
+}
