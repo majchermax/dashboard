@@ -16,6 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <link rel="stylesheet" href="./style.css">
 <link rel="stylesheet" href="./home-nav.css">
+<link rel="stylesheet" href="./import.css">
 </head>
 <body>
 <div class="home-screen" id="home-screen">
@@ -81,6 +82,11 @@
       <button class="home-card" onclick="openSection('trening')">
         <div class="home-card-body">
           <div class="home-card-title">Treningi</div>
+        </div>
+      </button>
+      <button class="home-card" onclick="openSection('import')">
+        <div class="home-card-body">
+          <div class="home-card-title">Import</div>
         </div>
       </button>
     </div>
@@ -252,25 +258,61 @@
     <div class="section-ico" style="background:#E6F1FB">💼</div>
     <div class="section-name">Praca</div>
   </div>
-  <div class="empty-section">
+  <div class="empty-section" id="work-empty">
     <div class="empty-ico">🚧</div>
     <div class="empty-txt">Sekcja w budowie</div>
     <div class="empty-sub">Tu pojawią się projekty, zadania i postępy</div>
   </div>
+  <div id="work-import-list"></div>
 </div>
 
 <div class="app" id="app-trening" style="display:none">
   <button class="back-btn" onclick="goHome()">‹ Wróć</button>
   <div class="section-header">
     <div class="section-ico" style="background:#FAEEDA">🏋️</div>
-    <div class="section-name">Trening</div>
+    <div class="section-name">Treningi</div>
   </div>
-  <div class="empty-section">
+  <div class="empty-section" id="training-empty">
     <div class="empty-ico">🚧</div>
     <div class="empty-txt">Sekcja w budowie</div>
     <div class="empty-sub">Tu pojawi się plan treningowy i wyniki</div>
   </div>
+  <div id="training-import-list"></div>
+</div>
+
+<div class="app" id="app-import" style="display:none">
+  <button class="back-btn" onclick="goHome()">‹ Wróć</button>
+  <div class="section-header">
+    <div class="section-ico" style="background:#E6F1FB">↳</div>
+    <div class="section-name">Import</div>
+  </div>
+
+  <div class="import-panel">
+    <div class="import-tabs" id="import-tabs">
+      <button class="import-tab active" data-mode="auto" onclick="setImportMode('auto',this)">Auto</button>
+      <button class="import-tab" data-mode="tasks" onclick="setImportMode('tasks',this)">Zadania</button>
+      <button class="import-tab" data-mode="training" onclick="setImportMode('training',this)">Trening</button>
+      <button class="import-tab" data-mode="habits" onclick="setImportMode('habits',this)">Nawyki</button>
+      <button class="import-tab" data-mode="note" onclick="setImportMode('note',this)">Notatka</button>
+    </div>
+    <textarea class="import-input" id="import-input" placeholder="Wklej tekst z ChatGPT, tabelkę albo gotowy blok #dashboard..."></textarea>
+    <div class="import-actions">
+      <button class="import-primary" onclick="analyzeImport()">Analizuj</button>
+      <button class="import-secondary" onclick="clearImport()">Wyczyść</button>
+    </div>
+  </div>
+
+  <div class="import-preview" id="import-preview">
+    <div class="import-empty">Wklej materiał i kliknij Analizuj.</div>
+  </div>
+
+  <button class="import-save" id="import-save" onclick="saveImportDraft()" style="display:none">Zapisz do dashboardu</button>
+
+  <div class="divider"></div>
+  <div class="sec-label">Ostatnie importy</div>
+  <div id="import-history"></div>
 </div>
 <script src="./app.js" defer></script>
+<script src="./import.js" defer></script>
 </body>
 </html>
