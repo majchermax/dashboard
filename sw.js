@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dashboard-shell-v5';
+const CACHE_NAME = 'dashboard-shell-v6';
 const APP_SHELL = [
   './',
   './index.html',
@@ -34,15 +34,22 @@ self.addEventListener('fetch', function (event) {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      if (cached) return cached;
-
-      return fetch(event.request).catch(function () {
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
+    fetch(event.request)
+      .then(function (response) {
+        if (response && response.ok && event.request.url.startsWith(self.location.origin)) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(event.request, copy);
+          });
         }
-        return undefined;
-      });
-    })
+        return response;
+      })
+      .catch(function () {
+        return caches.match(event.request).then(function (cached) {
+          if (cached) return cached;
+          if (event.request.mode === 'navigate') return caches.match('./index.html');
+          return undefined;
+        });
+      })
   );
 });
