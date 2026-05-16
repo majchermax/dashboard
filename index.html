@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="./style.css">
 <link rel="stylesheet" href="./home-nav.css">
 <link rel="stylesheet" href="./import.css">
+<link rel="stylesheet" href="./training.css">
 </head>
 <body>
 <div class="home-screen" id="home-screen">
@@ -69,26 +70,10 @@
     </div>
 
     <div class="home-cards">
-      <button class="home-card" onclick="openSection('ja')">
-        <div class="home-card-body">
-          <div class="home-card-title">Ja</div>
-        </div>
-      </button>
-      <button class="home-card" onclick="openSection('praca')">
-        <div class="home-card-body">
-          <div class="home-card-title">Praca</div>
-        </div>
-      </button>
-      <button class="home-card" onclick="openSection('trening')">
-        <div class="home-card-body">
-          <div class="home-card-title">Treningi</div>
-        </div>
-      </button>
-      <button class="home-card" onclick="openSection('import')">
-        <div class="home-card-body">
-          <div class="home-card-title">Import</div>
-        </div>
-      </button>
+      <button class="home-card" onclick="openSection('ja')"><div class="home-card-body"><div class="home-card-title">Ja</div></div></button>
+      <button class="home-card" onclick="openSection('praca')"><div class="home-card-body"><div class="home-card-title">Praca</div></div></button>
+      <button class="home-card" onclick="openSection('trening')"><div class="home-card-body"><div class="home-card-title">Treningi</div></div></button>
+      <button class="home-card" onclick="openSection('import')"><div class="home-card-body"><div class="home-card-title">Import</div></div></button>
     </div>
   </div>
 </div>
@@ -213,16 +198,8 @@
   <div class="divider"></div>
   <div class="sec-label">Serie</div>
   <div class="sum-grid">
-    <div class="sum-card">
-      <div class="sum-label">Najdłuższa seria</div>
-      <div class="sum-val" id="best-streak">0 dni</div>
-      <div class="sum-sub" id="best-streak-name">—</div>
-    </div>
-    <div class="sum-card">
-      <div class="sum-label">Aktywne nawyki</div>
-      <div class="sum-val" id="habit-count">0</div>
-      <div class="sum-sub">śledzone</div>
-    </div>
+    <div class="sum-card"><div class="sum-label">Najdłuższa seria</div><div class="sum-val" id="best-streak">0 dni</div><div class="sum-sub" id="best-streak-name">—</div></div>
+    <div class="sum-card"><div class="sum-label">Aktywne nawyki</div><div class="sum-val" id="habit-count">0</div><div class="sum-sub">śledzone</div></div>
   </div>
   <div id="habit-summary"></div>
 </div>
@@ -230,7 +207,6 @@
 <div id="page-health" class="page">
   <div class="sec-label">Ten tydzień</div>
   <div class="hweek-grid" id="hweek-grid"></div>
-
   <div class="sec-label">Dzień: <span id="hday-label"></span></div>
   <div class="hday-card">
     <div id="hmetrics-list"></div>
@@ -240,11 +216,9 @@
       <button class="add-metric-btn" onclick="addMetric()">+ Dodaj</button>
     </div>
   </div>
-
   <div class="divider"></div>
   <div class="sec-label">Średnia z 7 dni</div>
   <div class="h-sum-grid" id="h-summary"></div>
-
   <div class="divider"></div>
   <div class="sec-label">Archiwum tygodni</div>
   <div id="h-weekly-archive"></div>
@@ -254,39 +228,40 @@
 
 <div class="app" id="app-praca" style="display:none">
   <button class="back-btn" onclick="goHome()">‹ Wróć</button>
-  <div class="section-header">
-    <div class="section-ico" style="background:#E6F1FB">💼</div>
-    <div class="section-name">Praca</div>
-  </div>
-  <div class="empty-section" id="work-empty">
-    <div class="empty-ico">🚧</div>
-    <div class="empty-txt">Sekcja w budowie</div>
-    <div class="empty-sub">Tu pojawią się projekty, zadania i postępy</div>
-  </div>
+  <div class="section-header"><div class="section-ico" style="background:#E6F1FB">💼</div><div class="section-name">Praca</div></div>
+  <div class="empty-section" id="work-empty"><div class="empty-ico">🚧</div><div class="empty-txt">Sekcja w budowie</div><div class="empty-sub">Tu pojawią się projekty, zadania i postępy</div></div>
   <div id="work-import-list"></div>
 </div>
 
 <div class="app" id="app-trening" style="display:none">
   <button class="back-btn" onclick="goHome()">‹ Wróć</button>
-  <div class="section-header">
-    <div class="section-ico" style="background:#FAEEDA">🏋️</div>
-    <div class="section-name">Treningi</div>
+  <div class="section-header"><div class="section-ico" style="background:#FAEEDA">🏋️</div><div class="section-name">Treningi</div></div>
+  <div class="training-tabs">
+    <button class="training-tab active" onclick="switchTrainingPage('plan',this)">Plan treningowy</button>
+    <button class="training-tab" onclick="switchTrainingPage('progress',this)">Postępy</button>
+    <button class="training-tab" onclick="switchTrainingPage('measurements',this)">Pomiary</button>
   </div>
-  <div class="empty-section" id="training-empty">
-    <div class="empty-ico">🚧</div>
-    <div class="empty-txt">Sekcja w budowie</div>
-    <div class="empty-sub">Tu pojawi się plan treningowy i wyniki</div>
+  <div class="training-page active" id="training-page-plan"><div class="training-day-tabs" id="training-day-tabs"></div><div id="training-plan-list"></div><button class="training-save-btn" onclick="saveTrainingSnapshot()">Zapisz trening dnia</button></div>
+  <div class="training-page" id="training-page-progress"><div id="training-progress-list"></div></div>
+  <div class="training-page" id="training-page-measurements">
+    <div class="measurement-card">
+      <div class="measurement-top"><div><div class="import-type">Pomiary</div><div class="import-title">Dodaj pomiar</div></div><input class="measurement-date" id="measurement-date" type="date"></div>
+      <div class="measurement-grid">
+        <label>Waga<input id="measure-weight" inputmode="decimal" placeholder="kg"></label>
+        <label>Brzuch<input id="measure-waist" inputmode="decimal" placeholder="cm"></label>
+        <label>Biceps<input id="measure-biceps" inputmode="decimal" placeholder="cm"></label>
+        <label>Udo<input id="measure-thigh" inputmode="decimal" placeholder="cm"></label>
+        <label>Klatka<input id="measure-chest" inputmode="decimal" placeholder="cm"></label>
+      </div>
+      <button class="training-save-btn" onclick="saveMeasurement()">Zapisz pomiar</button>
+    </div>
+    <div id="measurement-history"></div>
   </div>
-  <div id="training-import-list"></div>
 </div>
 
 <div class="app" id="app-import" style="display:none">
   <button class="back-btn" onclick="goHome()">‹ Wróć</button>
-  <div class="section-header">
-    <div class="section-ico" style="background:#E6F1FB">↳</div>
-    <div class="section-name">Import</div>
-  </div>
-
+  <div class="section-header"><div class="section-ico" style="background:#E6F1FB">↳</div><div class="section-name">Import</div></div>
   <div class="import-panel">
     <div class="import-tabs" id="import-tabs">
       <button class="import-tab active" data-mode="auto" onclick="setImportMode('auto',this)">Auto</button>
@@ -296,23 +271,14 @@
       <button class="import-tab" data-mode="note" onclick="setImportMode('note',this)">Notatka</button>
     </div>
     <textarea class="import-input" id="import-input" placeholder="Wklej tekst z ChatGPT, tabelkę albo gotowy blok #dashboard..."></textarea>
-    <div class="import-actions">
-      <button class="import-primary" onclick="analyzeImport()">Analizuj</button>
-      <button class="import-secondary" onclick="clearImport()">Wyczyść</button>
-    </div>
+    <div class="import-actions"><button class="import-primary" onclick="analyzeImport()">Analizuj</button><button class="import-secondary" onclick="clearImport()">Wyczyść</button></div>
   </div>
-
-  <div class="import-preview" id="import-preview">
-    <div class="import-empty">Wklej materiał i kliknij Analizuj.</div>
-  </div>
-
+  <div class="import-preview" id="import-preview"><div class="import-empty">Wklej materiał i kliknij Analizuj.</div></div>
   <button class="import-save" id="import-save" onclick="saveImportDraft()" style="display:none">Zapisz do dashboardu</button>
-
-  <div class="divider"></div>
-  <div class="sec-label">Ostatnie importy</div>
-  <div id="import-history"></div>
+  <div class="divider"></div><div class="sec-label">Ostatnie importy</div><div id="import-history"></div>
 </div>
 <script src="./app.js" defer></script>
 <script src="./import.js" defer></script>
+<script src="./training.js" defer></script>
 </body>
 </html>
